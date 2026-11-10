@@ -9,6 +9,8 @@ export const LIMITS = {
 export const COLORS = ['#ff5a5f', '#2ec4b6', '#ffb703', '#8f5cff', '#3a86ff', '#ff7ac6',
   '#06d6a0', '#fb8500', '#9ef01a', '#e63946', '#4cc9f0', '#f72585'];
 
+export const AVATARS = ['bag', 'pig', 'dollar', 'coin', 'safe', 'wallet', 'plant', 'diamond', 'coin2', 'bull', 'bear', 'bear2', 'buddy'];
+
 const PID_RE = /^[a-zA-Z0-9-]{8,40}$/;
 
 const clean = (s, max) => String(s ?? '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, max);
@@ -134,7 +136,8 @@ function playerAction(s, pid, m, now) {
     if (!s.teams.some(t => t.id === m.team)) return { error: 'team' };
     const ex = s.players[pid];
     if (!ex && Object.keys(s.players).length >= 2000) return { error: 'full' };
-    s.players[pid] = { name, team: m.team, joinedAt: ex?.joinedAt ?? now, last: ex?.last ?? null };
+    const avatar = AVATARS.includes(m.avatar) ? m.avatar : (ex?.avatar ?? AVATARS[0]);
+    s.players[pid] = { name, team: m.team, avatar, joinedAt: ex?.joinedAt ?? now, last: ex?.last ?? null };
     return { changed: true };
   }
   const pl = s.players[pid];
@@ -291,7 +294,7 @@ export function publicView(s, now) {
   const playersByTeam = {};
   for (const pl of Object.values(s.players)) playersByTeam[pl.team] = (playersByTeam[pl.team] || 0) + 1;
   const feed = [
-    ...s.pledges.slice(-LIMITS.feed).map(p => ({ id: p.id, k: 'p', name: show ? p.name : '', team: p.team, amount: p.amount, match: p.match, ts: p.ts })),
+    ...s.pledges.slice(-LIMITS.feed).map(p => ({ id: p.id, k: 'p', name: show ? p.name : '', av: s.players[p.pid]?.avatar ?? null, team: p.team, amount: p.amount, match: p.match, ts: p.ts })),
     ...s.awards.slice(-6).map(a => ({ id: a.id, k: 'a', team: a.team, amount: a.amount, ts: a.ts })),
   ].sort((a, b) => a.ts - b.ts).slice(-LIMITS.feed);
 
@@ -309,8 +312,20 @@ export function publicView(s, now) {
   const leaders = Object.entries(s.points).sort((a, b) => b[1] - a[1]).slice(0, 5)
     .map(([pid, pts]) => ({ name: s.players[pid]?.name ?? '?', team: s.players[pid]?.team, pts }));
 
+  // Fundraiser leaderboard
+  const byF = {};
+  for (const p of s.pledges) {
+    const f = byF[p.pid] ??= { total: 0, count: 0 };
+    f.total += p.amount + p.match; f.count++;
+  }
+  const fundraisers = Object.entries(byF).filter(([pid]) => s.players[pid])
+    .sort((a, b) => b[1].total - a[1].total).slice(0, 8)
+    .map(([pid, f]) => ({ name: show ? s.players[pid].name : '', av: s.players[pid].avatar, team: s.players[pid].team, total: f.total, count: f.count }));
+  const roster = Object.values(s.players).sort((a, b) => b.joinedAt - a.joinedAt).slice(0, 40)
+    .map(p => ({ name: show ? p.name : '', av: p.avatar, team: p.team }));
+
   return {
-    code: s.code, now, settings: s.settings, phase: s.phase,
+    code: s.code, now, settings: s.settings, phase: s.phase, fundraisers, roster,
     teams: s.teams.map(t => ({ ...t, total: tt.team[t.id] || 0, players: playersByTeam[t.id] || 0 })),
     raised: tt.raised, pledged: tt.pledged, matched: tt.matched, awarded: tt.awarded,
     donors: new Set(s.pledges.map(p => (p.donor || p.pid + '|' + p.name).toLowerCase())).size,
@@ -328,7 +343,7 @@ export function playerView(s, pid) {
   for (const p of s.pledges) if (p.pid === pid) { total += p.amount; matched += p.match; mine.push({ id: p.id, donor: p.donor ?? '', amount: p.amount, match: p.match, ts: p.ts }); }
   const a = s.trivia.answers[pid];
   return {
-    pid, joined: true, name: pl.name, team: pl.team, total, matched, count: mine.length, mine: mine.slice(-30).reverse(), points: s.points[pid] || 0,
+    pid, joined: true, name: pl.name, avatar: pl.avatar, team: pl.team, total, matched, count: mine.length, mine: mine.slice(-30).reverse(), points: s.points[pid] || 0,
     answer: a ? a.opt : null, gained: s.trivia.result?.gained?.[pid] ?? 0,
   };
 }
