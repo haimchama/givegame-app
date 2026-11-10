@@ -47,7 +47,7 @@ npm run demo     dist/demo.html
 
 ## שרת
 
-- Worker אחד בשם `givegame-api`, שמגיש גם את האתר וגם את ה-API, בכתובת `givegame.tkb-pro.com` (custom domain, `workers_dev: false`).
+- Worker אחד בשם `givegame-app`, שמגיש גם את האתר וגם את ה-API, בכתובת `givegame.tkb-pro.com` (custom domain, `workers_dev: false`).
 - כל אירוע הוא Durable Object (SQLite, נתמך בתוכנית החינמית) שמחזיק את המצב ואת חיבורי ה-WebSocket (Hibernation API). אירוע נמחק לבד 45 יום אחרי שנוצר.
 - אין חשבונות, אין סודות, אין SDK חיצוני. נשמרים: שם שהאורח הקליד, שולחן, סכומי התחייבות ותשובות לחידון.
 
