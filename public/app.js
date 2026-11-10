@@ -23,13 +23,13 @@ const DICT = {
   he: {
     tagline: 'ערב גיוס שהוא משחק', joinEvent: 'הצטרפות לאירוע', code: 'קוד אירוע', join: 'הצטרפות',
     newEvent: 'יצירת אירוע חדש', demo: 'צפייה בדמו', myEvents: 'האירועים שלי', creating: 'יוצר…',
-    yourName: 'השם שלך (כפי שיופיע על המסך)', pickTeam: 'לאיזה שולחן/קבוצה?', letsGo: 'יאללה, נכנסים!',
-    waitHost: 'מחכים שהמנחה יתחיל…', youreIn: 'אתם בפנים!', howMuch: 'כמה תרצו לתרום?', other: 'סכום אחר',
-    give: 'תרומה', note: 'זו התחייבות לתרומה. הגבייה תתבצע לאחר האירוע.', youGave: 'התחייבת', confirmQ: 'לתרום {a}?',
-    yes: 'כן, אני תורם!', cancel: 'ביטול', thanks: 'תודה {n}!', match: 'מאצ\'ינג ×{m}', matchNote: 'כל תרומה מוכפלת ×{m}!',
+    yourName: 'השם שלך – המתרים (יופיע על המסך)', pickTeam: 'לאיזה שולחן/קבוצה?', letsGo: 'יאללה, נכנסים!',
+    waitHost: 'מחכים שהמנחה יתחיל…', youreIn: 'אתם בפנים!', howMuch: 'רישום תרומה שגייסת', other: 'סכום אחר',
+    give: 'רישום התרומה', note: 'שם התורם נשמר במערכת לגבייה ולא מוצג על המסך.', youGave: 'גייסת', confirmQ: 'לרשום {a} מ{d}?', donor: 'שם התורם', donorHint: 'לא יוצג על המסך', fromDonors: 'מ-{n} תורמים', myList: 'התרומות שרשמת', pickAmount: 'בחרו סכום או הקלידו', errDonor: 'נא למלא את שם התורם', recorded: 'נרשם! 🎉',
+    yes: 'כן, לרשום!', cancel: 'ביטול', thanks: 'כל הכבוד {n}!', match: 'מאצ\'ינג ×{m}', matchNote: 'כל תרומה מוכפלת ×{m}!',
     question: 'שאלה {i}/{n}', answered: 'התשובה נקלטה! מחכים לכולם…', correct: 'נכון!', wrong: 'לא הפעם…',
     points: 'נק\'', yourPoints: 'סה"כ נקודות: {p}', rightAnswer: 'התשובה הנכונה: {a}', finale: 'הגמר!',
-    goal: 'יעד', raised: 'נאסף', donors: 'תורמים', players: 'משתתפים', scan: 'סרקו והצטרפו!',
+    goal: 'יעד', raised: 'נאסף', donors: 'תורמים', players: 'מתרימים', scan: 'סרקו והצטרפו!',
     joinAt: 'הצטרפו ב-', sponsorQ: 'תשובה נכונה משחררת {a} מהספונסר!', answersIn: '{n} ענו',
     teamsWon: 'הקבוצות שזכו', topPlayers: 'מובילי החידון', thankYou: 'תודה רבה לכולם!', together: 'ביחד גייסנו',
     soundOn: '🔊 הפעלת צליל', fullscreen: '⛶ מסך מלא', offline: 'אין חיבור… מתחבר מחדש',
@@ -43,25 +43,25 @@ const DICT = {
     openGiving: '▶ פתיחת תרומות', startChallenge: '⚡ התחלת אתגר', chTitle: 'כותרת האתגר', chMinutes: 'דקות', chMult: 'הכפלה',
     chCap: 'תקרת מאצ\'ינג (0 = ללא)', startQ: '❓ הצגת שאלה', reveal: '👁 חשיפת התשובה', nextQ: 'השאלה הבאה ▶',
     backGiving: 'חזרה לתרומות', toFinale: '🎉 גמר חגיגי', toLobby: 'חזרה ללובי', endChallenge: 'סיום האתגר',
-    manual: 'רישום תרומה ידנית', name: 'שם', team: 'קבוצה', amount: 'סכום', add: 'הוספה', exportCsv: '⬇ ייצוא לאקסל (CSV)',
+    manual: 'רישום תרומה ידנית', name: 'שם המתרים', team: 'קבוצה', amount: 'סכום', add: 'הוספה', exportCsv: '⬇ ייצוא לאקסל (CSV)',
     del: 'מחיקה', sure: 'בטוח?', noPledges: 'עוד אין תרומות', save: 'שמירה', saved: 'נשמר ✔',
-    title: 'שם האירוע', currency: 'מטבע', presets: 'סכומים מוכנים (מופרדים בפסיק)', showNames: 'להציג שמות תורמים על המסך',
+    title: 'שם האירוע', currency: 'מטבע', presets: 'סכומים מוכנים (מופרדים בפסיק)', showNames: 'להציג שמות מתרימים על המסך',
     screenLang: 'שפת מסך המקרן', teams: 'קבוצות / שולחנות', addTeam: '+ קבוצה', addQ: '+ שאלה', qText: 'השאלה',
     opt: 'תשובה {i}', isCorrect: 'נכונה', sponsor: 'ספונסר (₪)', secs: 'שניות', resetAll: 'איפוס כל התרומות והחידון',
     hostLinkNote: 'קישור המנחה נותן שליטה מלאה באירוע. לא לשתף.', noKey: 'אין לך הרשאת מנחה לאירוע הזה במכשיר הזה.',
-    errQuestion: 'יש שאלה לא מלאה', mins: 'דק\'', autoBots: 'משתתפים מדומים', screen: 'מקרן', phone: 'טלפון',
+    errQuestion: 'יש שאלה לא מלאה', mins: 'דק\'', autoBots: 'מתרימים מדומים', screen: 'מקרן', phone: 'טלפון',
     demoNote: 'דמו: הכול רץ בדפדפן עם משתתפים מדומים. התחילו ב"לוח מנחה" ← "פתיחת תרומות", ואז נסו אתגר, חידון וגמר. בטלפון: תרמו בעצמכם.',
   },
   en: {
     tagline: 'A fundraiser that plays like a game', joinEvent: 'Join an event', code: 'Event code', join: 'Join',
     newEvent: 'Create a new event', demo: 'Watch the demo', myEvents: 'My events', creating: 'Creating…',
-    yourName: 'Your name (as shown on screen)', pickTeam: 'Which table / team?', letsGo: "Let's go!",
-    waitHost: 'Waiting for the host to start…', youreIn: "You're in!", howMuch: 'How much would you like to give?', other: 'Other amount',
-    give: 'Give', note: 'This is a pledge. Payment is collected after the event.', youGave: 'You pledged', confirmQ: 'Give {a}?',
-    yes: "Yes, I'm in!", cancel: 'Cancel', thanks: 'Thank you {n}!', match: 'Matching ×{m}', matchNote: 'Every gift is multiplied ×{m}!',
+    yourName: 'Your name – the fundraiser (shown on screen)', pickTeam: 'Which table / team?', letsGo: "Let's go!",
+    waitHost: 'Waiting for the host to start…', youreIn: "You're in!", howMuch: 'Record a gift you raised', other: 'Other amount',
+    give: 'Record gift', note: 'The donor name is kept for collection and never shown on screen.', youGave: 'You raised', confirmQ: 'Record {a} from {d}?', donor: 'Donor name', donorHint: 'not shown on screen', fromDonors: 'from {n} donors', myList: 'Gifts you recorded', pickAmount: 'Pick an amount or type one', errDonor: 'Please enter the donor name', recorded: 'Recorded! 🎉',
+    yes: 'Yes, record it', cancel: 'Cancel', thanks: 'Well done {n}!', match: 'Matching ×{m}', matchNote: 'Every gift is multiplied ×{m}!',
     question: 'Question {i}/{n}', answered: 'Answer received! Waiting for everyone…', correct: 'Correct!', wrong: 'Not this time…',
     points: 'pts', yourPoints: 'Total points: {p}', rightAnswer: 'Correct answer: {a}', finale: 'Finale!',
-    goal: 'Goal', raised: 'Raised', donors: 'Donors', players: 'Players', scan: 'Scan to join!',
+    goal: 'Goal', raised: 'Raised', donors: 'Donors', players: 'Fundraisers', scan: 'Scan to join!',
     joinAt: 'Join at ', sponsorQ: 'A correct answer unlocks {a} from our sponsor!', answersIn: '{n} answered',
     teamsWon: 'Teams that won', topPlayers: 'Trivia leaders', thankYou: 'Thank you all!', together: 'Together we raised',
     soundOn: '🔊 Sound on', fullscreen: '⛶ Full screen', offline: 'Offline… reconnecting',
@@ -74,13 +74,13 @@ const DICT = {
     openGiving: '▶ Open giving', startChallenge: '⚡ Start challenge', chTitle: 'Challenge title', chMinutes: 'Minutes', chMult: 'Multiplier',
     chCap: 'Matching cap (0 = none)', startQ: '❓ Show question', reveal: '👁 Reveal answer', nextQ: 'Next question ▶',
     backGiving: 'Back to giving', toFinale: '🎉 Grand finale', toLobby: 'Back to lobby', endChallenge: 'End challenge',
-    manual: 'Record a pledge manually', name: 'Name', team: 'Team', amount: 'Amount', add: 'Add', exportCsv: '⬇ Export to Excel (CSV)',
+    manual: 'Record a pledge manually', name: 'Fundraiser', team: 'Team', amount: 'Amount', add: 'Add', exportCsv: '⬇ Export to Excel (CSV)',
     del: 'Delete', sure: 'Sure?', noPledges: 'No pledges yet', save: 'Save', saved: 'Saved ✔',
-    title: 'Event name', currency: 'Currency', presets: 'Preset amounts (comma separated)', showNames: 'Show donor names on screen',
+    title: 'Event name', currency: 'Currency', presets: 'Preset amounts (comma separated)', showNames: 'Show fundraiser names on screen',
     screenLang: 'Projector language', teams: 'Teams / tables', addTeam: '+ Team', addQ: '+ Question', qText: 'Question',
     opt: 'Answer {i}', isCorrect: 'Correct', sponsor: 'Sponsor', secs: 'Seconds', resetAll: 'Reset all pledges and trivia',
     hostLinkNote: 'The host link gives full control of the event. Do not share it.', noKey: "This device doesn't have host access to this event.",
-    errQuestion: 'A question is incomplete', mins: 'min', autoBots: 'Simulated players', screen: 'Projector', phone: 'Phone',
+    errQuestion: 'A question is incomplete', mins: 'min', autoBots: 'Simulated fundraisers', screen: 'Projector', phone: 'Phone',
     demoNote: 'Demo: runs in your browser with simulated players. Start in "Host panel" → "Open giving", then try a challenge, trivia and the finale. On "Phone": give yourself.',
   },
 };
@@ -264,6 +264,7 @@ class LocalServer {
       'אלי ושרה', 'תמר ג.', 'משפחת מזרחי', 'אורי', 'חנה ויעקב', 'משפחת פרידמן'];
     const bots = names.map((n, i) => ({ pid: 'demo-bot-' + String(i).padStart(4, '0'), n }));
     const amounts = [18, 36, 36, 50, 100, 180, 180, 360, 360, 500, 1000, 1800];
+    const donorsList = ['ראובן ש.', 'משפחת גולן', 'דבורה', 'שמעון ק.', 'איתן', 'מרים ונתן', 'בני א.', 'ליאת'];
     const act = (b, msg) => G.apply(this.s, { role: 'player', pid: b.pid }, msg, Date.now());
     const loop = () => {
       setTimeout(loop, 900 + Math.random() * 2200);
@@ -277,7 +278,7 @@ class LocalServer {
           act(x, { t: 'answer', opt: Math.random() < 0.6 ? q.correct : (Math.random() * q.options.length) | 0 }); changed = true;
         }
       } else if (s.phase !== 'lobby' && Math.random() < (s.phase === 'challenge' ? 0.9 : 0.55)) {
-        changed = !!act(b, { t: 'pledge', amount: amounts[(Math.random() * amounts.length) | 0] }).changed;
+        changed = !!act(b, { t: 'pledge', amount: amounts[(Math.random() * amounts.length) | 0], donor: donorsList[(Math.random() * donorsList.length) | 0] }).changed;
       }
       if (changed) this.broadcast();
     };
@@ -420,8 +421,11 @@ function viewPlayer(root, conn, code, opts = {}) {
     if (pub.phase === 'challenge' && pub.challenge && !pub.challenge.ended && pub.challenge.mult > 1)
       b = `<div class="ch-banner">⚡ ${esc(pub.challenge.title || t('match', { m: pub.challenge.mult }))} · ×${pub.challenge.mult} · <span data-ends="${pub.challenge.endsAt}"></span></div>` + b;
     if (pub.phase === 'finale') b = `<div class="ch-banner fin">🎉 ${t('finale')}</div>` + b;
-    if (me.total) b += `<div class="my-total">${t('youGave')}: <b>${money(me.total, cur())}</b></div>`;
     elBanner.innerHTML = b;
+    const tot = $('[data-mytotal]', elMain);
+    if (tot) tot.innerHTML = `<div class="mt-l">${t('youGave')}</div><div class="mt-v">${money(me.total + (me.matched || 0), cur())}</div><div class="mt-s">${t('fromDonors', { n: nf.format(me.count || 0) })}</div>`;
+    const ml = $('[data-mine]', elMain);
+    if (ml) ml.innerHTML = me.mine?.length ? `<h3>${t('myList')}</h3>` + me.mine.map(x => `<div class="mine-i"><span>${esc(x.donor)}</span><b>${money(x.amount, cur())}${x.match ? ` <em>+${money(x.match, cur())}</em>` : ''}</b></div>`).join('') : '';
   }
   function renderMain() {
     elMain.onclick = null;
@@ -456,38 +460,57 @@ function viewPlayer(root, conn, code, opts = {}) {
   }
   function renderGive() {
     elMain.innerHTML = `
-      <h2 class="ask">${t('howMuch')}</h2>
-      <div class="amounts">${pub.settings.presets.map((a, i) => `<button class="amt c${i % 6}" data-a="${a}">${money(a, cur())}</button>`).join('')}</div>
-      <form class="custom"><input name="a" inputmode="numeric" placeholder="${t('other')}" maxlength="7"><button class="btn">${t('give')}</button></form>
-      <p class="note">${t('note')}</p>`;
-    elMain.onclick = onAmt;
-    $('form.custom', elMain).addEventListener('submit', e => {
+      <div class="my-total-card" data-mytotal></div>
+      <form class="give-form">
+        <h2 class="ask">${t('howMuch')}</h2>
+        <label>${t('donor')} <small>(${t('donorHint')})</small><input name="donor" maxlength="${G.LIMITS.donor}" autocomplete="off" enterkeyhint="next"></label>
+        <label>${t('pickAmount')}</label>
+        <div class="amounts">${pub.settings.presets.map((a, i) => `<button type="button" class="amt c${i % 6}" data-a="${a}">${money(a, cur())}</button>`).join('')}</div>
+        <input name="a" class="amt-input" inputmode="numeric" placeholder="${t('other')}" maxlength="9" autocomplete="off">
+        <button class="btn primary big">${t('give')}</button>
+        <p class="note">🔒 ${t('note')}</p>
+      </form>
+      <div class="mine" data-mine></div>`;
+    const f = $('form.give-form', elMain);
+    elMain.onclick = e => {
+      const b = e.target.closest('.amt'); if (!b) return;
+      f.a.value = nf.format(+b.dataset.a);
+      $$('.amt', f).forEach(x => x.classList.toggle('sel', x === b));
+      if (!f.donor.value.trim()) f.donor.focus();
+    };
+    f.a.addEventListener('input', () => $$('.amt', f).forEach(x => x.classList.remove('sel')));
+    f.addEventListener('submit', e => {
       e.preventDefault();
-      const a = parseInt(e.target.a.value.replace(/\D/g, ''), 10);
-      if (a > 0) confirmGive(a); else toast(root, t('errAmount'), 'bad');
+      const donor = f.donor.value.trim();
+      const a = parseInt(f.a.value.replace(/\D/g, ''), 10);
+      if (!donor) { f.donor.focus(); return toast(root, t('errDonor'), 'bad'); }
+      if (!(a > 0)) return toast(root, t('errAmount'), 'bad');
+      confirmGive(a, donor, () => { f.reset(); $$('.amt', f).forEach(x => x.classList.remove('sel')); });
     });
+    renderBits();
   }
-  function onAmt(e) { const b = e.target.closest('.amt'); if (b) confirmGive(+b.dataset.a); }
-  function confirmGive(a) {
+  function confirmGive(a, donor, onDone) {
     $('.sheet', root)?.remove();
     const ch = pub.phase === 'challenge' && pub.challenge && !pub.challenge.ended && pub.challenge.mult > 1;
     const sh = document.createElement('div');
     sh.className = 'sheet';
-    sh.innerHTML = `<div class="sheet-card"><div class="sheet-amt">${money(a, cur())}</div>
+    sh.innerHTML = `<div class="sheet-card"><div class="sheet-donor">${esc(donor)}</div><div class="sheet-amt">${money(a, cur())}</div>
       ${ch ? `<div class="sheet-match">⚡ ${t('matchNote', { m: pub.challenge.mult })}</div>` : ''}
-      <p>${t('confirmQ', { a: money(a, cur()) })}</p>
+      <p>${t('confirmQ', { a: money(a, cur()), d: esc(donor) })}</p>
       <button class="btn primary big" data-yes>${t('yes')}</button><button class="btn ghost" data-no>${t('cancel')}</button></div>`;
     root.appendChild(sh);
     sh.addEventListener('click', async e => {
       if (e.target === sh || e.target.closest('[data-no]')) return sh.remove();
       if (!e.target.closest('[data-yes]')) return;
       e.target.disabled = true;
-      const r = await conn.send({ t: 'pledge', amount: a });
+      const r = await conn.send({ t: 'pledge', amount: a, donor });
       sh.remove();
       if (r.error) return toast(root, errText(t, r.error), 'bad');
+      onDone?.();
       const done = document.createElement('div');
       done.className = 'sheet thanks';
-      done.innerHTML = `<div class="thanks-in"><div class="big-emoji">🎉</div><h2>${t('thanks', { n: esc(me.name) })}</h2><div class="sheet-amt">${money(a, cur())}</div></div>`;
+      done.innerHTML = `<div class="thanks-in"><div class="big-emoji">🎉</div><h2>${t('recorded')}</h2><div class="sheet-amt">${money(a, cur())}</div>
+        <p class="muted">${esc(donor)}</p><h3>${t('thanks', { n: esc(me.name) })}</h3></div>`;
       root.appendChild(done);
       confetti(done, 1.2);
       navigator.vibrate?.(60);
@@ -526,7 +549,7 @@ function viewPlayer(root, conn, code, opts = {}) {
 }
 
 function errText(t, e) {
-  return ({ slow: t('errSlow'), notOpen: t('errNotOpen'), amount: t('errAmount'), offline: t('errOffline'), name: t('errName'), question: t('errQuestion') })[e] ?? t('errGeneric');
+  return ({ slow: t('errSlow'), notOpen: t('errNotOpen'), amount: t('errAmount'), offline: t('errOffline'), name: t('errName'), question: t('errQuestion'), donor: t('errDonor') })[e] ?? t('errGeneric');
 }
 
 // ---------------- screen (projector) ----------------
@@ -821,7 +844,7 @@ function viewHost(root, conn, code, key, opts = {}) {
     if (!$('.manual', body)) {
       body.innerHTML = `
         <form class="card manual"><label>${t('manual')}</label>
-          <div class="row3"><input name="name" placeholder="${t('name')}" maxlength="30" required>
+          <div class="row3"><input name="donor" placeholder="${t('donor')}" maxlength="40" required><input name="name" placeholder="${t('name')}" maxlength="30" required>
           <select name="team">${pub.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>
           <input name="amount" type="number" min="1" placeholder="${t('amount')}" required></div>
           <button class="btn">${t('add')}</button></form>
@@ -830,14 +853,14 @@ function viewHost(root, conn, code, key, opts = {}) {
       $('.manual', body).addEventListener('submit', async e => {
         e.preventDefault();
         const f = e.target;
-        const r = await send({ t: 'manualPledge', name: f.name.value, team: f.team.value, amount: f.amount.value });
-        if (!r.error) { f.name.value = ''; f.amount.value = ''; }
+        const r = await send({ t: 'manualPledge', name: f.name.value, donor: f.donor.value, team: f.team.value, amount: f.amount.value });
+        if (!r.error) { f.donor.value = ''; f.amount.value = ''; }
       });
     }
     const list = $('[data-c=plist]', body);
     if (!hv) return;
     list.innerHTML = hv.pledges.length ? hv.pledges.map(p => `<div class="prow" style="--c:${team(p.team)?.color ?? '#888'}">
-        <span class="pn">${esc(p.name)} <small>${esc(team(p.team)?.name ?? '')} · ${new Date(p.ts).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</small></span>
+        <span class="pn">${esc(p.donor || '—')} <small>← ${esc(p.name)} · ${esc(team(p.team)?.name ?? '')} · ${new Date(p.ts).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</small></span>
         <b>${money(p.amount, cur())}${p.match ? ` <em>+${money(p.match, cur())}</em>` : ''}</b>
         <button class="x ${armed.has(p.id) ? 'armed' : ''}" data-act="removePledge" data-id="${p.id}">${armed.has(p.id) ? t('sure') : '✕'}</button></div>`).join('') : `<p class="muted">${t('noPledges')}</p>`;
   }

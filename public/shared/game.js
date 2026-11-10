@@ -2,7 +2,7 @@
 // Every function here is deterministic given (state, input, now). No I/O.
 
 export const LIMITS = {
-  name: 30, title: 60, teamName: 24, teams: 12, maxAmount: 1_000_000,
+  name: 30, donor: 40, title: 60, teamName: 24, teams: 12, maxAmount: 1_000_000,
   questions: 40, qText: 160, option: 60, presets: 6, feed: 14, minutes: 30, seconds: 120,
 };
 
@@ -144,6 +144,8 @@ function playerAction(s, pid, m, now) {
     if (s.phase === 'lobby') return { error: 'notOpen' };
     const amount = int(m.amount, 1, LIMITS.maxAmount);
     if (!amount) return { error: 'amount' };
+    const donor = clean(m.donor, LIMITS.donor);
+    if (!donor) return { error: 'donor' };
     if (pl.last != null && now - pl.last < 1500) return { error: 'slow' };
     pl.last = now;
     let match = 0;
@@ -153,7 +155,7 @@ function playerAction(s, pid, m, now) {
       if (c.cap > 0) match = Math.max(0, Math.min(match, c.cap - c.used));
       c.used += match;
     }
-    const p = { id: nextId(s, 'p'), pid, name: pl.name, team: pl.team, amount, match, ts: now };
+    const p = { id: nextId(s, 'p'), pid, name: pl.name, donor, team: pl.team, amount, match, ts: now };
     s.pledges.push(p);
     return { changed: true, event: { t: 'pledge', id: p.id } };
   }
@@ -263,8 +265,9 @@ function hostAction(s, m, now) {
       // Host records a pledge given on paper / by phone.
       const amount = int(m.amount, 1, LIMITS.maxAmount);
       const name = clean(m.name, LIMITS.name);
+      const donor = clean(m.donor, LIMITS.donor);
       if (!amount || !name || !s.teams.some(t => t.id === m.team)) return { error: 'bad' };
-      const p = { id: nextId(s, 'p'), pid: 'host', name, team: m.team, amount, match: 0, ts: now };
+      const p = { id: nextId(s, 'p'), pid: 'host', name, donor, team: m.team, amount, match: 0, ts: now };
       s.pledges.push(p);
       return { changed: true, event: { t: 'pledge', id: p.id } };
     }
@@ -310,7 +313,7 @@ export function publicView(s, now) {
     code: s.code, now, settings: s.settings, phase: s.phase,
     teams: s.teams.map(t => ({ ...t, total: tt.team[t.id] || 0, players: playersByTeam[t.id] || 0 })),
     raised: tt.raised, pledged: tt.pledged, matched: tt.matched, awarded: tt.awarded,
-    donors: new Set(s.pledges.map(p => p.pid + '|' + p.name)).size,
+    donors: new Set(s.pledges.map(p => (p.donor || p.pid + '|' + p.name).toLowerCase())).size,
     players: Object.keys(s.players).length,
     challenge: s.challenge && { title: s.challenge.title, endsAt: s.challenge.endsAt, mult: s.challenge.mult, cap: s.challenge.cap, used: s.challenge.used, ended: !!s.challenge.ended },
     trivia, leaders, feed,
@@ -320,11 +323,12 @@ export function publicView(s, now) {
 export function playerView(s, pid) {
   const pl = s.players[pid];
   if (!pl) return { pid, joined: false };
-  let total = 0;
-  for (const p of s.pledges) if (p.pid === pid) total += p.amount;
+  let total = 0, matched = 0;
+  const mine = [];
+  for (const p of s.pledges) if (p.pid === pid) { total += p.amount; matched += p.match; mine.push({ id: p.id, donor: p.donor ?? '', amount: p.amount, match: p.match, ts: p.ts }); }
   const a = s.trivia.answers[pid];
   return {
-    pid, joined: true, name: pl.name, team: pl.team, total, points: s.points[pid] || 0,
+    pid, joined: true, name: pl.name, team: pl.team, total, matched, count: mine.length, mine: mine.slice(-30).reverse(), points: s.points[pid] || 0,
     answer: a ? a.opt : null, gained: s.trivia.result?.gained?.[pid] ?? 0,
   };
 }
@@ -340,7 +344,7 @@ export function hostView(s) {
 export function pledgesCsv(s) {
   const team = Object.fromEntries(s.teams.map(t => [t.id, t.name]));
   const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
-  const rows = [['time', 'name', 'team', 'amount', 'matched']];
-  for (const p of s.pledges) rows.push([new Date(p.ts).toISOString(), p.name, team[p.team] ?? p.team, p.amount, p.match]);
+  const rows = [['time', 'donor', 'fundraiser', 'team', 'amount', 'matched']];
+  for (const p of s.pledges) rows.push([new Date(p.ts).toISOString(), p.donor ?? '', p.name, team[p.team] ?? p.team, p.amount, p.match]);
   return '﻿' + rows.map(r => r.map(esc).join(',')).join('\r\n');
 }
