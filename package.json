@@ -1,0 +1,24 @@
+{
+  "name": "givegame-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "demo": "node scripts/build-demo.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "qrcode-generator": "^2.0.4",
+    "wrangler": "^4.160.0"
+  },
+  "type": "module"
+}
