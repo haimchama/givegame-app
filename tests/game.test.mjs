@@ -69,3 +69,11 @@ test('pledge needs a donor; donor stays off the public view', () => {
   assert.equal(G.playerView(s, P1).mine[0].donor, 'סוד');
   assert.ok(G.pledgesCsv(s).includes('סוד'));
 });
+
+test('accessories are validated per slot', () => {
+  const s = room();
+  G.apply(s, pl(P1), { t: 'join', name: 'a', team: 't1', avatar: 'pig', acc: { head: 'crown', face: 'crown', neck: 'tie', x: 'y' } }, 0);
+  assert.deepEqual(s.players[P1].acc, { head: 'crown', neck: 'tie' });
+  G.apply(s, pl(P1), { t: 'join', name: 'a', team: 't1' }, 1);
+  assert.deepEqual(s.players[P1].acc, { head: 'crown', neck: 'tie' });
+});

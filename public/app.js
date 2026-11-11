@@ -17,7 +17,55 @@ const now = () => Date.now() + clockOffset;
 const mmss = ms => { const s = Math.ceil(ms / 1000); return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : String(s); };
 const SHAPES = ['★', '♥', '◆', '●'];
 const avUrl = id => window.GG_AVATARS?.[id] ?? `/avatars/${id}.webp`;
-const avImg = (id, cls = '') => id ? `<img class="av ${cls}" src="${avUrl(id)}" alt="" loading="lazy">` : '';
+const accUrl = id => window.GG_ACC?.[id] ?? `/acc/${id}.webp`;
+// Accessory placement on the avatar: [center x %, center y %, width %]
+const ACC_POS = {
+  tophat: [50, 9, 62], cap: [50, 13, 62], crown: [50, 8, 56], pirate: [50, 12, 72], cashcrown: [50, 9, 56],
+  goldshades: [50, 44, 62], dollarshades: [50, 44, 64], pixelshades: [50, 42, 64], monocle: [64, 46, 24],
+  bowtie: [50, 76, 44], tie: [50, 82, 16], chain: [50, 80, 40], scarf: [50, 78, 54],
+  moneybag: [84, 82, 36], scepter: [86, 70, 30], gloves: [84, 82, 38], watch: [84, 84, 28],
+};
+const SLOTS = ['head', 'face', 'neck', 'hand'];
+const DRAW_ORDER = ['neck', 'hand', 'face', 'head'];
+function avatar(id, acc, cls = '') {
+  if (!id) return '';
+  const parts = acc ? DRAW_ORDER.filter(sl => acc[sl] && ACC_POS[acc[sl]]).map(sl => {
+    const [x, y, w] = ACC_POS[acc[sl]];
+    return `<img class="acc" src="${accUrl(acc[sl])}" style="left:${x}%;top:${y}%;width:${w}%" alt="">`;
+  }).join('') : '';
+  return `<span class="av ${cls}"><img class="av-base" src="${avUrl(id)}" alt="" loading="lazy">${parts}</span>`;
+}
+const avImg = (id, cls = '') => avatar(id, null, cls);
+
+// Character + accessories editor. state = { av, acc, slot }
+function mountLook(el, t, state, onChange) {
+  const draw = () => {
+    el.innerHTML = `
+      <div class="studio">
+        <div class="st-prev">${avatar(state.av, state.acc, 'st-big')}</div>
+        <div class="st-side">
+          <div class="st-tabs">${SLOTS.map(sl => `<button type="button" data-slot="${sl}" class="${sl === state.slot ? 'on' : ''}">${t('slot_' + sl)}${state.acc[sl] ? ' •' : ''}</button>`).join('')}</div>
+          <div class="st-items">${['', ...G.ACCESSORIES[state.slot]].map(id => `<button type="button" data-acc="${id}" class="${(state.acc[state.slot] ?? '') === id ? 'on' : ''}">${id ? `<img src="${accUrl(id)}" alt="">` : '✕'}</button>`).join('')}</div>
+        </div>
+      </div>
+      <label>${t('pickAvatar')}</label>
+      <div class="av-pick">${G.AVATARS.map(a => `<button type="button" data-av="${a}" class="${a === state.av ? 'on' : ''}">${avImg(a)}</button>`).join('')}</div>`;
+  };
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-slot],[data-acc],[data-av]');
+    if (!b) return;
+    if (b.dataset.slot) state.slot = b.dataset.slot;
+    else if (b.dataset.av) state.av = b.dataset.av;
+    else if (b.dataset.acc !== undefined) { if (b.dataset.acc) state.acc[state.slot] = b.dataset.acc; else delete state.acc[state.slot]; }
+    draw(); onChange?.(state);
+  });
+  draw();
+}
+function savedLook() {
+  let av = LS.get('gg.avatar', null);
+  if (!G.AVATARS.includes(av)) av = G.AVATARS[(Math.random() * G.AVATARS.length) | 0];
+  return { av, acc: G.cleanAcc(LS.get('gg.acc', {})), slot: 'head' };
+}
 const uid = () => (crypto.randomUUID?.() ?? (Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)));
 
 // ---------------- i18n ----------------
@@ -25,7 +73,7 @@ const DICT = {
   he: {
     tagline: 'ערב גיוס שהוא משחק', joinEvent: 'הצטרפות לאירוע', code: 'קוד אירוע', join: 'הצטרפות',
     newEvent: 'יצירת אירוע חדש', demo: 'צפייה בדמו', myEvents: 'האירועים שלי', creating: 'יוצר…',
-    yourName: 'השם שלך – המתרים (יופיע על המסך)', pickTeam: 'לאיזה שולחן/קבוצה?', pickAvatar: 'בחרו דמות', topFundraisers: 'מובילי ההתרמה', gifts: 'תרומות', letsGo: 'יאללה, נכנסים!',
+    yourName: 'השם שלך – המתרים (יופיע על המסך)', pickTeam: 'לאיזה שולחן/קבוצה?', pickAvatar: 'בחרו דמות', dressUp: 'הלבישו את הדמות', editLook: 'שינוי הדמות', slot_head: '🎩 כובע', slot_face: '🕶 משקפיים', slot_neck: '🎀 צוואר', slot_hand: '💰 ביד', topFundraisers: 'מובילי ההתרמה', gifts: 'תרומות', letsGo: 'יאללה, נכנסים!',
     waitHost: 'מחכים שהמנחה יתחיל…', youreIn: 'אתם בפנים!', howMuch: 'רישום תרומה שגייסת', other: 'סכום אחר',
     give: 'רישום התרומה', note: 'שם התורם נשמר במערכת לגבייה ולא מוצג על המסך.', youGave: 'גייסת', confirmQ: 'לרשום {a} מ{d}?', donor: 'שם התורם', donorHint: 'לא יוצג על המסך', fromDonors: 'מ-{n} תורמים', myList: 'התרומות שרשמת', pickAmount: 'בחרו סכום או הקלידו', errDonor: 'נא למלא את שם התורם', recorded: 'נרשם! 🎉',
     yes: 'כן, לרשום!', cancel: 'ביטול', thanks: 'כל הכבוד {n}!', match: 'מאצ\'ינג ×{m}', matchNote: 'כל תרומה מוכפלת ×{m}!',
@@ -57,7 +105,7 @@ const DICT = {
   en: {
     tagline: 'A fundraiser that plays like a game', joinEvent: 'Join an event', code: 'Event code', join: 'Join',
     newEvent: 'Create a new event', demo: 'Watch the demo', myEvents: 'My events', creating: 'Creating…',
-    yourName: 'Your name – the fundraiser (shown on screen)', pickTeam: 'Which table / team?', pickAvatar: 'Pick your character', topFundraisers: 'Top fundraisers', gifts: 'gifts', letsGo: "Let's go!",
+    yourName: 'Your name – the fundraiser (shown on screen)', pickTeam: 'Which table / team?', pickAvatar: 'Pick your character', dressUp: 'Dress up your character', editLook: 'Change look', slot_head: '🎩 Hat', slot_face: '🕶 Glasses', slot_neck: '🎀 Neck', slot_hand: '💰 Hand', topFundraisers: 'Top fundraisers', gifts: 'gifts', letsGo: "Let's go!",
     waitHost: 'Waiting for the host to start…', youreIn: "You're in!", howMuch: 'Record a gift you raised', other: 'Other amount',
     give: 'Record gift', note: 'The donor name is kept for collection and never shown on screen.', youGave: 'You raised', confirmQ: 'Record {a} from {d}?', donor: 'Donor name', donorHint: 'not shown on screen', fromDonors: 'from {n} donors', myList: 'Gifts you recorded', pickAmount: 'Pick an amount or type one', errDonor: 'Please enter the donor name', recorded: 'Recorded! 🎉',
     yes: 'Yes, record it', cancel: 'Cancel', thanks: 'Well done {n}!', match: 'Matching ×{m}', matchNote: 'Every gift is multiplied ×{m}!',
@@ -273,7 +321,7 @@ class LocalServer {
       if (!this.bots) return;
       const s = this.s, b = bots[(Math.random() * bots.length) | 0];
       let changed = false;
-      if (!s.players[b.pid]) changed = !!act(b, { t: 'join', name: b.n, avatar: G.AVATARS[(Math.random() * G.AVATARS.length) | 0], team: s.teams[(Math.random() * s.teams.length) | 0].id }).changed;
+      if (!s.players[b.pid]) changed = !!act(b, { t: 'join', name: b.n, avatar: G.AVATARS[(Math.random() * G.AVATARS.length) | 0], acc: Object.fromEntries(Object.entries(G.ACCESSORIES).filter(() => Math.random() < 0.45).map(([k, l]) => [k, l[(Math.random() * l.length) | 0]])), team: s.teams[(Math.random() * s.teams.length) | 0].id }).changed;
       else if (s.phase === 'trivia' && s.trivia.stage === 'question') {
         for (const x of bots) if (s.players[x.pid] && !s.trivia.answers[x.pid] && Math.random() < 0.35) {
           const q = s.trivia.questions[s.trivia.idx];
@@ -398,6 +446,25 @@ function viewPlayer(root, conn, code, opts = {}) {
   conn.on('status', ok => root.classList.toggle('offline', !ok));
   const cur = () => pub?.settings.currency ?? '₪';
   const team = id => pub?.teams.find(x => x.id === id);
+  root.addEventListener('click', e => {
+    if (!e.target.closest('[data-editlook]') || !me?.joined) return;
+    $('.sheet', root)?.remove();
+    const look = { av: me.avatar, acc: { ...me.acc }, slot: 'head' };
+    const sh = document.createElement('div');
+    sh.className = 'sheet';
+    sh.innerHTML = `<div class="sheet-card look-card"><h3>${t('editLook')}</h3><div class="look"></div>
+      <button class="btn primary big" data-save>${t('save')}</button><button class="btn ghost" data-no>${t('cancel')}</button></div>`;
+    root.appendChild(sh);
+    mountLook($('.look', sh), t, look);
+    sh.addEventListener('click', async ev => {
+      if (ev.target === sh || ev.target.closest('[data-no]')) return sh.remove();
+      if (!ev.target.closest('[data-save]')) return;
+      LS.set('gg.avatar', look.av); LS.set('gg.acc', look.acc);
+      const r = await conn.send({ t: 'join', name: me.name, team: me.team, avatar: look.av, acc: look.acc });
+      sh.remove();
+      if (r.error) toast(root, errText(t, r.error), 'bad');
+    });
+  });
 
   function key() {
     if (!pub || !me) return 'load';
@@ -417,7 +484,7 @@ function viewPlayer(root, conn, code, opts = {}) {
   function renderBits() {
     if (!pub || !me?.joined) { elMe.innerHTML = ''; elBanner.innerHTML = ''; return; }
     const tm = team(me.team);
-    elMe.innerHTML = `${avImg(me.avatar, 'me-av')}<span class="me-name">${esc(me.name)}</span><span class="tchip" style="--c:${tm?.color}">${esc(tm?.name)}</span>`;
+    elMe.innerHTML = `<button class="me-edit" data-editlook title="${t('editLook')}">${avatar(me.avatar, me.acc, 'me-av')}</button><span class="me-name">${esc(me.name)}</span><span class="tchip" style="--c:${tm?.color}">${esc(tm?.name)}</span>`;
     const pct = Math.min(100, Math.round(pub.raised / pub.settings.goal * 100));
     let b = `<div class="mini-goal"><div style="width:${pct}%"></div><span>${money(pub.raised, cur())} · ${pct}%</span></div>`;
     if (pub.phase === 'challenge' && pub.challenge && !pub.challenge.ended && pub.challenge.mult > 1)
@@ -443,24 +510,24 @@ function viewPlayer(root, conn, code, opts = {}) {
   }
   function renderJoin() {
     const saved = LS.get('gg.name', '');
-    let myAv = LS.get('gg.avatar', null);
-    if (!G.AVATARS.includes(myAv)) myAv = G.AVATARS[(Math.random() * G.AVATARS.length) | 0];
+    const look = savedLook();
     elMain.innerHTML = `
       <form class="join-form">
         <label>${t('yourName')}</label>
         <input name="name" maxlength="${G.LIMITS.name}" value="${esc(saved)}" autocomplete="name" required>
-        <label>${t('pickAvatar')}</label>
-        <div class="av-pick">${G.AVATARS.map(a => `<label><input type="radio" name="avatar" value="${a}" ${a === myAv ? 'checked' : ''}>${avImg(a)}</label>`).join('')}</div>
+        <label>${t('dressUp')}</label>
+        <div class="look"></div>
         <label>${t('pickTeam')}</label>
         <div class="teams-pick">${pub.teams.map((x, i) => `<label class="tpick" style="--c:${x.color}"><input type="radio" name="team" value="${x.id}" ${i === 0 ? 'checked' : ''}><span>${esc(x.name)}</span></label>`).join('')}</div>
         <button class="btn primary big">${t('letsGo')}</button>
       </form>`;
+    mountLook($('.look', elMain), t, look);
     $('form', elMain).addEventListener('submit', async e => {
       e.preventDefault();
-      const name = e.target.name.value.trim(), tm = e.target.team.value, avatar = e.target.avatar.value;
+      const name = e.target.name.value.trim(), tm = e.target.team.value;
       if (!name) return toast(root, t('errName'), 'bad');
-      LS.set('gg.name', name); LS.set('gg.avatar', avatar);
-      const r = await conn.send({ t: 'join', name, team: tm, avatar });
+      LS.set('gg.name', name); LS.set('gg.avatar', look.av); LS.set('gg.acc', look.acc);
+      const r = await conn.send({ t: 'join', name, team: tm, avatar: look.av, acc: look.acc });
       if (r.error) toast(root, errText(t, r.error), 'bad');
     });
   }
@@ -650,8 +717,8 @@ function viewScreen(root, conn, code, opts = {}) {
     if (r.players) r.players.textContent = nf.format(pub.players);
     if (r.donors) r.donors.textContent = nf.format(pub.donors);
     if (r.answered) r.answered.textContent = t('answersIn', { n: pub.trivia?.answered ?? 0 });
-    if (r.roster) r.roster.innerHTML = pub.roster.map(p => `<div class="rb" style="--c:${team(p.team)?.color ?? '#888'}">${avImg(p.av)}<span>${esc(p.name)}</span></div>`).join('');
-    if (r.fr) r.fr.innerHTML = pub.fundraisers.slice(0, pub.phase === 'finale' ? 8 : 5).map((f, i) => `<div class="fr-i" style="--c:${team(f.team)?.color ?? '#888'}"><span class="fr-n">${['🥇', '🥈', '🥉'][i] ?? i + 1}</span>${avImg(f.av)}<span class="fr-name">${esc(f.name || team(f.team)?.name)}<small>${esc(team(f.team)?.name)}</small></span><b>${money(f.total, cur())}</b></div>`).join('') || '<div class="muted">—</div>';
+    if (r.roster) r.roster.innerHTML = pub.roster.map(p => `<div class="rb" style="--c:${team(p.team)?.color ?? '#888'}">${avatar(p.av, p.acc)}<span>${esc(p.name)}</span></div>`).join('');
+    if (r.fr) r.fr.innerHTML = pub.fundraisers.slice(0, pub.phase === 'finale' ? 8 : 5).map((f, i) => `<div class="fr-i" style="--c:${team(f.team)?.color ?? '#888'}"><span class="fr-n">${['🥇', '🥈', '🥉'][i] ?? i + 1}</span>${avatar(f.av, f.acc)}<span class="fr-name">${esc(f.name || team(f.team)?.name)}<small>${esc(team(f.team)?.name)}</small></span><b>${money(f.total, cur())}</b></div>`).join('') || '<div class="muted">—</div>';
     if (r.lteams) r.lteams.innerHTML = pub.teams.map(x => `<span class="tchip" style="--c:${x.color}">${esc(x.name)} · ${x.players}</span>`).join('');
     if (r.raised) tween(r.raised, pub.raised, 1200);
     const pct = pub.raised / pub.settings.goal * 100;
@@ -707,7 +774,7 @@ function viewScreen(root, conn, code, opts = {}) {
     el.style.setProperty('--c', tm?.color ?? '#888');
     el.innerHTML = x.k === 'a'
       ? `<span class="fi-n">🎁 ${esc(tm?.name)}</span><b>+${money(x.amount, cur())}</b>`
-      : `${avImg(x.av)}<span class="fi-n">${esc(x.name || '❤')} <small>${esc(tm?.name)}</small></span><b>${money(x.amount, cur())}${x.match ? ` <em>+${money(x.match, cur())}</em>` : ''}</b>`;
+      : `${avatar(x.av, x.acc)}<span class="fi-n">${esc(x.name || '❤')} <small>${esc(tm?.name)}</small></span><b>${money(x.amount, cur())}${x.match ? ` <em>+${money(x.match, cur())}</em>` : ''}</b>`;
     f.prepend(el);
     while (f.children.length > 14) f.lastChild.remove();
   }
@@ -716,7 +783,7 @@ function viewScreen(root, conn, code, opts = {}) {
     const el = document.createElement('div');
     el.className = 'pop';
     el.style.setProperty('--c', tm?.color ?? '#fff');
-    el.innerHTML = `${avImg(x.av, 'pop-av')}<div class="pop-amt">+${money(x.amount + x.match, cur())}</div><div class="pop-n">${esc(x.name || '')} ${tm ? '· ' + esc(tm.name) : ''}</div>`;
+    el.innerHTML = `${avatar(x.av, x.acc, 'pop-av')}<div class="pop-amt">+${money(x.amount + x.match, cur())}</div><div class="pop-n">${esc(x.name || '')} ${tm ? '· ' + esc(tm.name) : ''}</div>`;
     pops.appendChild(el);
     while (pops.children.length > 3) pops.firstChild.remove();
     setTimeout(() => el.remove(), 3200);
